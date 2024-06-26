@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DonkeyKong", "DonkeyKong.pyproj", "{BD0D2E14-E1B2-47CF-AE5C-3CB13405DD8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD0D2E14-E1B2-47CF-AE5C-3CB13405DD8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD0D2E14-E1B2-47CF-AE5C-3CB13405DD8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {967FF75D-EC00-416E-A80E-E25382F61ADA}
+	EndGlobalSection
+EndGlobal
