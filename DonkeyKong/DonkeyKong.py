@@ -9,7 +9,7 @@ np.random.seed(seed)
 random.seed(seed)
 
 # Initialize the Donkey Kong environment
-env = gym.make('ALE/DonkeyKong-v5', render_mode=None)
+env = gym.make('ALE/DonkeyKong-v5', render_mode="rgb_array")
 obs, _ = env.reset()
 
 # Define parameters for the genetic algorithm
@@ -18,11 +18,7 @@ generations = 50
 mutation_rate = 0.1
 crossover_rate = 0.5
 gene_length = 500  # Number of actions in a sequence
-mutation_genes = 10  # Number of genes to mutate
 actions = env.action_space.n
-
-fitness_milestones = [-160, -130, -100, -70, -40]
-genome_length_increments = 300
 
 # Function to extract the player's position from the game screen
 def get_player_position(obs):
@@ -57,7 +53,7 @@ def get_player_position(obs):
 # Function to determine the player's floor based on the y-coordinate
 def get_floor(y):
     # Approximate y-coordinates for floors in Donkey Kong (example values, adjust as necessary)
-    floor_heights = [180, 160, 140, 120, 100, 80]
+    floor_heights = [190, 150, 110, 70, 30]
     for i, height in enumerate(floor_heights):
         if y >= height:
             return i + 1
@@ -78,6 +74,15 @@ def fitness_function(genes):
         # Calculate vertical progress
         max_height_achieved = min(max_height_achieved, current_position[1])
         
+        # Calculate horizontal progress based on the current floor
+        current_floor = get_floor(current_position[1])
+        if current_floor % 2 == 1:  # Odd floors: reward moving right
+            if current_position[0] > previous_position[0]:
+                max_horizontal_distance += current_position[0] - previous_position[0]
+        else:  # Even floors: reward moving left
+            if current_position[0] < previous_position[0]:
+                max_horizontal_distance += previous_position[0] - current_position[0]
+        
         previous_position = current_position
         
         # Check for loss of life and reset if necessary
@@ -92,10 +97,7 @@ def fitness_function(genes):
     return fitness_score
 
 # Initialize the population with random actions
-current_gene_length = gene_length
-population = [np.random.randint(0, actions, current_gene_length) for _ in range(population_size)]
-
-highest_fitness_achieved = float('-inf')
+population = [np.random.randint(0, actions, gene_length) for _ in range(population_size)]
 
 # Genetic Algorithm
 for generation in range(generations):
@@ -112,17 +114,6 @@ for generation in range(generations):
 
     max_fitness = np.max(fitness_scores)
     print(f'Highest fitness: {max_fitness}')
-    
-    # Check if a fitness milestone is achieved and increase the genome length
-    if max_fitness > highest_fitness_achieved:
-        highest_fitness_achieved = max_fitness
-        for milestone in fitness_milestones:
-            if max_fitness >= milestone:
-                current_gene_length += genome_length_increments
-                # Ensure new individuals are created with the new gene length
-                population = [np.random.randint(0, actions, current_gene_length) for _ in range(population_size)]
-                print(f'Gene length increased to {current_gene_length} due to fitness milestone {milestone}')
-                break
 
     # Select the best individuals to be parents
     sorted_indices = np.argsort(fitness_scores)[-population_size // 2:]
@@ -141,10 +132,9 @@ for generation in range(generations):
             child = random.choice(parents)
 
         # Mutation
-        for _ in range(mutation_genes):
-            if np.random.rand() < mutation_rate:
-                mutation_point = np.random.randint(0, gene_length)
-                child[mutation_point] = np.random.randint(0, actions)
+        if np.random.rand() < mutation_rate:
+            mutation_point = np.random.randint(0, gene_length)
+            child[mutation_point] = np.random.randint(0, actions)
 
         new_population.append(child)
 
